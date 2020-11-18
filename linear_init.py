@@ -6,11 +6,11 @@ from time import sleep
 relayLU = LED(24)
 relayLD = LED(23)
 
-# Right leg relay module
+# Right leg relay module. Value passed is the GPIO pin number.
 relayRU = LED(15)
 relayRD = LED(14)
 
-# Middle leg relay module
+# Middle leg relay module. Value passed is the GPIO pin number.
 relayMU = LED(27)
 relayMD = LED(17)
 
