@@ -18,20 +18,20 @@ r = np.empty(6, dtype=LED)  #RD, RU, LD, LU, MD, MU,
 
 def extend(relay):
     if relay == 1:
-        r[0] = LED(14)
+        r[0] = LED(14, initial_value = True)
         r[1] = 0
     if relay == 2:
-        r[2] = LED(23)
+        r[2] = LED(23, initial_value = True)
         r[3] = 0
     if relay == 3:
-        r[4] = LED(17)
+        r[4] = LED(17, initial_value = True)
         r[5] = 0
     if relay == 4:
-        r[0] = LED(14)
+        r[0] = LED(14, initial_value = True)
         r[1] = 0
-        r[2] = LED(23)
+        r[2] = LED(23, initial_value = True)
         r[3] = 0
-        r[4] = LED(17)
+        r[4] = LED(17, initial_value = True)
         r[5] = 0
     return
 
@@ -39,18 +39,18 @@ def extend(relay):
 def contract(relay):
     if relay == 1:
         r[0] = 0
-        r[1] = LED(15)
+        r[1] = LED(15, initial_value = True)
     if relay == 2:
         r[2] = 0
-        r[3] = LED(24)
+        r[3] = LED(24, initial_value = True)
     if relay == 3:
         r[4] = 0
-        r[5] = LED(27)
+        r[5] = LED(27, initial_value = True)
     if relay == 4:
         r[0] = 0
-        r[1] = LED(15)
+        r[1] = LED(15, initial_value = True)
         r[2] = 0
-        r[3] = LED(24)
+        r[3] = LED(24, initial_value = True)
         r[4] = 0
         r[5] = LED(27)
     return
