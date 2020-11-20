@@ -52,7 +52,7 @@ def contract(relay):
         r[2] = 0
         r[3] = LED(24, initial_value=True)
         r[4] = 0
-        r[5] = LED(27)
+        r[5] = LED(27, initial_value=True)
     return
 
 
