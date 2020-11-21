@@ -16,44 +16,43 @@ import numpy as np
                             #0,  1,  2,  3,  4,  5
 r = np.empty(6, dtype=LED)  #RD, RU, LD, LU, MD, MU,
 
+
 def extend(relay):
     if relay == 1:
-        r[0] = LED(14, initial_value=True)
+        if r[0] == 0:
+            r[0] = LED(14, initial_value=True)
         r[1] = 0
     if relay == 2:
-        r[2] = LED(23, initial_value=True)
+        if r[2] == 0:
+            r[2] = LED(23, initial_value=True)
         r[3] = 0
     if relay == 3:
-        r[4] = LED(17, initial_value=True)
+        if r[4] == 0:
+            r[4] = LED(17, initial_value=True)
         r[5] = 0
     if relay == 4:
-        r[0] = LED(14, initial_value=True)
-        r[1] = 0
-        r[2] = LED(23, initial_value=True)
-        r[3] = 0
-        r[4] = LED(17, initial_value=True)
-        r[5] = 0
-    return
+        extend(1)
+        extend(2)
+        extend(3)
 
 
 def contract(relay):
     if relay == 1:
         r[0] = 0
-        r[1] = LED(15, initial_value=True)
+        if r[1] == 0:
+            r[1] = LED(15, initial_value=True)
     if relay == 2:
         r[2] = 0
-        r[3] = LED(24, initial_value=True)
+        if r[3] == 0:
+            r[3] = LED(24, initial_value=True)
     if relay == 3:
         r[4] = 0
-        r[5] = LED(27, initial_value=True)
+        if r[5] == 0:
+            r[5] = LED(27, initial_value=True)
     if relay == 4:
-        r[0] = 0
-        r[1] = LED(15, initial_value=True)
-        r[2] = 0
-        r[3] = LED(24, initial_value=True)
-        r[4] = 0
-        r[5] = LED(27, initial_value=True)
-    return
+        contract(1)
+        contract(2)
+        contract(3)
 
 
 def stay(relay):
@@ -67,11 +66,15 @@ def stay(relay):
         r[4] = 0
         r[5] = 0
     if relay == 4:
-        r[0] = 0
-        r[1] = 0
-        r[2] = 0
-        r[3] = 0
-        r[4] = 0
-        r[5] = 0
-    return
+        stay(1)
+        stay(2)
+        stay(3)
 
+
+def reset():
+    contract(4)
+    sleep(2)
+    stay(4)
+
+
+stay(4)
