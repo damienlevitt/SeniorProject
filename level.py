@@ -8,7 +8,7 @@ import numpy as np
 # L Being low makes y positive
 wait_time = 0.1
 level_state = 0.3
-acc_due_to_motors = 0.2
+acc_due_to_motors = 0.3
 
 
 def leveler():
@@ -29,7 +29,7 @@ def leveler():
     x, y, z = acc.value()
     print(acc.value())
     if x > level_state:
-        while x > (level_state - acc_due_to_motors):
+        while x > level_state:
             ld.extend(3)
             sleep(wait_time)
             x, y, z = acc.value()
@@ -41,14 +41,14 @@ def leveler():
             sleep(wait_time)
             x, y, z = acc.value()
         ld.stay(4)
-    sleep(wait_time*5)
+    sleep(wait_time*10)
     x, y, z = acc.value()
     print(acc.value())
     return acc.is_level()
 
 
 def level():
-    done = 0
+    done = (0, 1)[acc.is_level()]
     while not done:
         done = leveler()
         print(done)

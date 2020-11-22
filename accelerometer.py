@@ -18,7 +18,7 @@ def abs_value():
 
 
 def is_level():
-    if abs_value() < 0.5:
+    if abs_value() < 0.3:
         return True
     else:
         return False
