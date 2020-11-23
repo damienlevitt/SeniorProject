@@ -13,9 +13,9 @@ def publish_status(id, run_event, retry = 5):
     # Will need to change when updating IoT Core
     IoT_CLIENT = "Self-Leveling-Device" + str(id)
     HOST_NAME = "a2d34x14spudxd-ats.iot.us-west-1.amazonaws.com"
-    ROOT_CA = "./AmazonRootCA1.pem"
-    PRIVATE_KEY = "./4d62ec6825-private.pem.key"
-    CERT_FILE = "./4d62ec6825-certificate.pem.crt"
+    ROOT_CA = "~/certs/AmazonRootCA1.pem"
+    PRIVATE_KEY = "~/certs/4d62ec6825-private.pem.key"
+    CERT_FILE = "~/certs/4d62ec6825-certificate.pem.crt"
     myMQTTClient = AWSIoTMQTTClient(IoT_CLIENT)
     myMQTTClient.configureEndpoint(HOST_NAME, 8883)
     myMQTTClient.configureCredentials(ROOT_CA, PRIVATE_KEY, CERT_FILE)
