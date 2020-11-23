@@ -3,6 +3,8 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import time
 import json
 import random
+import accelerometer as acc
+
 
 def publish_status(id, run_event, retry = 5):
     time.sleep(random.randint(1, 3))
@@ -46,7 +48,7 @@ def publish_status(id, run_event, retry = 5):
     if connected == True:
 
         # Will need to change to match IoT Core
-        publish_topic_name = "topic/Self-Leveling-Device"
+        publish_topic_name = "topic/iot/selfLevel"
 
         random.seed(str(id) + str(time.gmtime()))
 
@@ -55,7 +57,8 @@ def publish_status(id, run_event, retry = 5):
                 message = {}
                 message['id'] = id
                 # Change this to accept the status of the Pi
-                message['status'] = True if random.randint(0, 1) == 1 else False
+                message['level'] = acc.is_level()
+                message['battery'] = "100%"
                 messageJson = json.dumps(message)
 
                 print(messageJson)
@@ -74,3 +77,5 @@ def publish_status(id, run_event, retry = 5):
     print("Exitting...")
 
     return
+
+
