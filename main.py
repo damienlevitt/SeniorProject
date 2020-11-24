@@ -7,7 +7,8 @@ import uuid
 
 if __name__ == "__main__":
     device_online = True
-    device_id = uuid.uuid4()
+    id = uuid.uuid4()
+    device_id = str(id)
     power = True
     auto_level = True
     while power:

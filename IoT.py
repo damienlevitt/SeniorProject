@@ -24,10 +24,11 @@ def publish_status(id, status, retry = 5):
     myMQTTClient.configureDrainingFrequency(2)
     myMQTTClient.configureConnectDisconnectTimeout(10)
     myMQTTClient.configureMQTTOperationTimeout(10)
-    connected = False
     myMQTTClient.connect()
 
-    print("in loop")
+    # AWS Message Contents
+    print("\n-----------------------------------------\n")
+    print("CONNECTION MADE!\n")
     message = {}
     message['id'] = id
     message['level'] = acc.is_level()
@@ -35,10 +36,13 @@ def publish_status(id, status, retry = 5):
     message['healthy'] = status
     messageJson = json.dumps(message)
     myMQTTClient.publish("iot/selfLevel", messageJson, 1)
-    print("Published: level status to the topic: " + "'iot/selfLevel'")
+
+    # Console Message
+    print("PUBLISHED: Status to topic: 'iot/selfLevel'\n")
+    print("Device ID: ", id)
+    print("Level: ", acc.is_level())
+    print("Battery: 100")
+    print("Healthy: ", status)
     time.sleep(2)
-
-    print("End publish")
-
-    AWSIoTMQTTClient.disconnect()
-    print("hello")
+    print("\nEND PUBLISH -- DISCONNECTING\n")
+    myMQTTClient.disconnect()
