@@ -53,6 +53,3 @@ def level():
     while not done:
         done = leveler()
         print(done)
-
-
-level()
