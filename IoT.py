@@ -26,53 +26,64 @@ def publish_status(id, retry = 5):
     myMQTTClient.configureMQTTOperationTimeout(10)
 
     connected = False
+    myMQTTClient.connect()
 
-    while retry != 0:
-        try:
-            myMQTTClient.connect()
-            print("Self-Leveling-Device " + str(id) + " Connected...")
-            connected = True
-            retry = 0
+    # try:
+    #     myMQTTClient.connect()
+    #     print("Self-Leveling-Device " + str(id) + " Connected...")
+    #     connected = True
+    #     retry = 0
+    #
+    # except:
+    #     print("Self-Leveling-Device " + str(id) + " failed to connect")
+    #
+    #     if (retry != 0):
+    #         retry = retry - 1
+    #         print("Retrying... " + str(retry) + " retries left")
+    #         time.sleep(random.randint(1, 5))
+    #     else:
+    #         print("Out of retries... Exitting")
+    #         return
 
-        except:
-            print("Self-Leveling-Device " + str(id) + " failed to connect")
+    print("connected")
 
-            if (retry != 0):
-                retry = retry - 1
-                print("Retrying... " + str(retry) + " retries left")
-                time.sleep(random.randint(1, 5))
-            else:
-                print("Out of retries... Exitting")
-                return
-
-
-    if connected == True:
+   # if connected == True:
 
         # Will need to change to match IoT Core
-        publish_topic_name = "iot/selfLevel"
+    publish_topic_name = "iot/selfLevel"
 
-        random.seed(str(id) + str(time.gmtime()))
+    random.seed(str(id) + str(time.gmtime()))
+    message = {}
+    message['id'] = id
+    # Change this to accept the status of the Pi
+    message['level'] = True if acc.is_level() == True else False
+    message['battery'] = "100%"
+    messageJson = json.dumps(message)
 
-        try:
-            message = {}
-            message['id'] = id
-            # Change this to accept the status of the Pi
-            message['level'] = True if acc.is_level() == True else False
-            message['battery'] = "100%"
-            messageJson = json.dumps(message)
+    print(messageJson)
+    myMQTTClient.publish(publish_topic_name, messageJson, 1)
+    time.sleep(random.randint(5, 10))
+    # try:
+    #     message = {}
+    #     message['id'] = id
+    #     # Change this to accept the status of the Pi
+    #     message['level'] = True if acc.is_level() == True else False
+    #     message['battery'] = "100%"
+    #     messageJson = json.dumps(message)
+    #
+    #     print(messageJson)
+    #     myMQTTClient.publish(publish_topic_name, messageJson, 1)
+    #     time.sleep(random.randint(5, 10))
+    #     # try:
+    #     #     myMQTTClient.publish(publish_topic_name, messageJson, 1)
+    #     #     time.sleep(random.randint(5, 10))
+    #     #
+    #     # except:
+    #     #     pass
+    # except:
+    #     pass
 
-            print(messageJson)
-
-            try:
-                myMQTTClient.publish(publish_topic_name, messageJson, 1)
-                time.sleep(random.randint(5, 10))
-
-            except:
-                pass
-        except:
-            pass
-
-        myMQTTClient.disconnect()
+    myMQTTClient.disconnect()
 
     print("Exitting...")
 
