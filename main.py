@@ -12,7 +12,9 @@ if __name__ == "__main__":
     power = True
     auto_level = True
     while power:
-        iot.publish_status(device_id, device_online)
+        iot.publish(device_id, device_online)
+        iot.receive()
+        iot.disconnect()
         if not acc.is_level() and auto_level is True:
             level.level()
         else:
