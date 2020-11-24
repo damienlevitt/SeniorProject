@@ -7,7 +7,7 @@ import accelerometer as acc
 from threading import Event
 
 
-def publish_status(id, retry = 5):
+def publish_status(id, run_event, retry = 5):
     time.sleep(random.randint(1, 3))
     print("Self-Level-Device " + str(id) + " is starting...")
 
@@ -24,69 +24,13 @@ def publish_status(id, retry = 5):
     myMQTTClient.configureDrainingFrequency(2)
     myMQTTClient.configureConnectDisconnectTimeout(10)
     myMQTTClient.configureMQTTOperationTimeout(10)
-
-    connected = False
     myMQTTClient.connect()
 
-    # try:
-    #     myMQTTClient.connect()
-    #     print("Self-Leveling-Device " + str(id) + " Connected...")
-    #     connected = True
-    #     retry = 0
-    #
-    # except:
-    #     print("Self-Leveling-Device " + str(id) + " failed to connect")
-    #
-    #     if (retry != 0):
-    #         retry = retry - 1
-    #         print("Retrying... " + str(retry) + " retries left")
-    #         time.sleep(random.randint(1, 5))
-    #     else:
-    #         print("Out of retries... Exitting")
-    #         return
+    for i in range (5):
+        AWSIoTMQTTClient.publish("iot/selfLevel", acc.is_level(), 1)
+        print("Published: level status to the topic: " + "'iot/selfLevel'")
+        time.sleep(2)
 
-    print("connected")
+    print("End publish")
 
-   # if connected == True:
-
-        # Will need to change to match IoT Core
-    publish_topic_name = "iot/selfLevel"
-
-    random.seed(str(id) + str(time.gmtime()))
-    message = {}
-    message['id'] = id
-    # Change this to accept the status of the Pi
-    message['level'] = True if acc.is_level() == True else False
-    message['battery'] = "100%"
-    messageJson = json.dumps(message)
-
-    print(messageJson)
-    myMQTTClient.publish(publish_topic_name, messageJson, 1)
-    time.sleep(random.randint(5, 10))
-    # try:
-    #     message = {}
-    #     message['id'] = id
-    #     # Change this to accept the status of the Pi
-    #     message['level'] = True if acc.is_level() == True else False
-    #     message['battery'] = "100%"
-    #     messageJson = json.dumps(message)
-    #
-    #     print(messageJson)
-    #     myMQTTClient.publish(publish_topic_name, messageJson, 1)
-    #     time.sleep(random.randint(5, 10))
-    #     # try:
-    #     #     myMQTTClient.publish(publish_topic_name, messageJson, 1)
-    #     #     time.sleep(random.randint(5, 10))
-    #     #
-    #     # except:
-    #     #     pass
-    # except:
-    #     pass
-
-    myMQTTClient.disconnect()
-
-    print("Exitting...")
-
-    return
-
-publish_status(200, retry=5)
+    AWSIoTMQTTClient.disconnect()
