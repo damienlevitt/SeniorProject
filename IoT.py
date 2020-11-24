@@ -7,7 +7,7 @@ import accelerometer as acc
 from threading import Event
 
 
-def publish_status(id, run_event, retry = 5):
+def publish_status(id, retry = 5):
     time.sleep(random.randint(1, 3))
     print("Self-Level-Device " + str(id) + " is starting...")
 
@@ -27,7 +27,7 @@ def publish_status(id, run_event, retry = 5):
 
     connected = False
 
-    while retry != 0 and run_event.is_set():
+    while retry != 0:
         try:
             myMQTTClient.connect()
             print("Self-Leveling-Device " + str(id) + " Connected...")
@@ -54,22 +54,21 @@ def publish_status(id, run_event, retry = 5):
         random.seed(str(id) + str(time.gmtime()))
 
         try:
-            while run_event.is_set():
-                message = {}
-                message['id'] = id
-                # Change this to accept the status of the Pi
-                message['level'] = True if acc.is_level() == True else False
-                message['battery'] = "100%"
-                messageJson = json.dumps(message)
+            message = {}
+            message['id'] = id
+            # Change this to accept the status of the Pi
+            message['level'] = True if acc.is_level() == True else False
+            message['battery'] = "100%"
+            messageJson = json.dumps(message)
 
-                print(messageJson)
+            print(messageJson)
 
-                try:
-                    myMQTTClient.publish(publish_topic_name, messageJson, 1)
-                    time.sleep(random.randint(5, 10))
+            try:
+                myMQTTClient.publish(publish_topic_name, messageJson, 1)
+                time.sleep(random.randint(5, 10))
 
-                except:
-                    pass
+            except:
+                pass
         except:
             pass
 
@@ -79,4 +78,4 @@ def publish_status(id, run_event, retry = 5):
 
     return
 
-publish_status(200, 1, retry=5)
+publish_status(200, retry=5)
