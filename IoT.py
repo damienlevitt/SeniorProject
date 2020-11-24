@@ -13,9 +13,9 @@ def publish_status(id, run_event, retry = 5):
     # Will need to change when updating IoT Core
     IoT_CLIENT = "Self-Leveling-Device" + str(id)
     HOST_NAME = "a2d34x14spudxd-ats.iot.us-west-1.amazonaws.com"
-    ROOT_CA = "~/certs/AmazonRootCA1.pem"
-    PRIVATE_KEY = "~/certs/4d62ec6825-private.pem.key"
-    CERT_FILE = "~/certs/4d62ec6825-certificate.pem.crt"
+    ROOT_CA = "./certs/AmazonRootCA1.pem"
+    PRIVATE_KEY = "./certs/4d62ec6825-private.pem.key"
+    CERT_FILE = "./certs/4d62ec6825-certificate.pem.crt"
     myMQTTClient = AWSIoTMQTTClient(IoT_CLIENT)
     myMQTTClient.configureEndpoint(HOST_NAME, 8883)
     myMQTTClient.configureCredentials(ROOT_CA, PRIVATE_KEY, CERT_FILE)
@@ -48,7 +48,7 @@ def publish_status(id, run_event, retry = 5):
     if connected == True:
 
         # Will need to change to match IoT Core
-        publish_topic_name = "topic/iot/selfLevel"
+        publish_topic_name = "iot/selfLevel"
 
         random.seed(str(id) + str(time.gmtime()))
 
@@ -57,7 +57,7 @@ def publish_status(id, run_event, retry = 5):
                 message = {}
                 message['id'] = id
                 # Change this to accept the status of the Pi
-                message['level'] = acc.is_level()
+                message['level'] = True if acc.is_level() == True else False
                 message['battery'] = "100%"
                 messageJson = json.dumps(message)
 
