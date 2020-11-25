@@ -7,7 +7,7 @@ import numpy as np
 # R Being low makes y negative
 # L Being low makes y positive
 wait_time = 0.3
-level_state_x = 0.19
+level_state_x = 0.23
 level_state_y = 0.15
 acc_due_to_motors = 0.0
 
