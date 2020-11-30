@@ -1,76 +1,81 @@
-# Our files
-import accelerometer as acc
-import level
-
-# Standard libraries
-import json
-
-# Third party libraries
+# Import SDK packages
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+import time
+import json
+import random
+import accelerometer as acc
 
-HOST_NAME = "a2d34x14spudxd-ats.iot.us-west-1.amazonaws.com"
-ROOT_CA = "certs/AmazonRootCA1.pem"
-PRIVATE_KEY = "certs/a46c3aefe0-private.pem.key"
-CERT_FILE = "certs/a46c3aefe0-certificate.pem.crt"
+
+def publish_status(id, run_event, retry = 5):
+    time.sleep(random.randint(1, 3))
+    print("Self-Level-Device " + str(id) + " is starting...")
+
+    # Will need to change when updating IoT Core
+    IoT_CLIENT = "Self-Leveling-Device" + str(id)
+    HOST_NAME = "a2d34x14spudxd-ats.iot.us-west-1.amazonaws.com"
+    ROOT_CA = "./AmazonRootCA1.pem"
+    PRIVATE_KEY = "./4d62ec6825-private.pem.key"
+    CERT_FILE = "./4d62ec6825-certificate.pem.crt"
+    myMQTTClient = AWSIoTMQTTClient(IoT_CLIENT)
+    myMQTTClient.configureEndpoint(HOST_NAME, 8883)
+    myMQTTClient.configureCredentials(ROOT_CA, PRIVATE_KEY, CERT_FILE)
+    myMQTTClient.configureOfflinePublishQueueing(-1)
+    myMQTTClient.configureDrainingFrequency(2)
+    myMQTTClient.configureConnectDisconnectTimeout(10)
+    myMQTTClient.configureMQTTOperationTimeout(10)
+
+    connected = False
+
+    while retry != 0 and run_event.is_set():
+        try:
+            myMQTTClient.connect()
+            print("Self-Leveling-Device " + str(id) + " Connected...")
+            connected = True
+            retry = 0
+
+        except:
+            print("Self-Leveling-Device " + str(id) + " failed to connect")
+
+            if (retry != 0):
+                retry = retry - 1
+                print("Retrying... " + str(retry) + " retries left")
+                time.sleep(random.randint(1, 5))
+            else:
+                print("Out of retries... Exitting")
+                return
 
 
-class IoT:
-    id = None
-    name = None
-    auto_level = False
-    connection = None
+    if connected == True:
 
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-        self.connection = self.get_connection()
-        self.sub()
+        # Will need to change to match IoT Core
+        publish_topic_name = "topic/iot/selfLevel"
 
-    def get_connection(self):
-        if self.name == None or self.id == None:
-            return None
-
-        connection = AWSIoTMQTTClient(self.name)
-        connection.configureEndpoint(HOST_NAME, 8883)
-        connection.configureCredentials(ROOT_CA, PRIVATE_KEY, CERT_FILE)
-        connection.configureOfflinePublishQueueing(-1)
-        connection.configureDrainingFrequency(2)
-        connection.configureConnectDisconnectTimeout(10)
-        connection.configureMQTTOperationTimeout(10)
-        connection.connect()
-        return connection
-
-    def pub(self, message = None):
-        message = {}
-        message['id'] = self.id
-        message['level'] = acc.is_level()
-        message['battery'] = "100"
-        message['healthy'] = True
+        random.seed(str(id) + str(time.gmtime()))
 
         try:
-            print("Publishing status to AWS...")
-            self.connection.publish("iot/selfLevel", json.dumps(message), 1)
-            print("Publish Completed")
+            while run_event.is_set():
+                message = {}
+                message['id'] = id
+                # Change this to accept the status of the Pi
+                message['level'] = acc.is_level()
+                message['battery'] = "100%"
+                messageJson = json.dumps(message)
+
+                print(messageJson)
+
+                try:
+                    myMQTTClient.publish(publish_topic_name, messageJson, 1)
+                    time.sleep(random.randint(5, 10))
+
+                except:
+                    pass
         except:
-            print("Could not publish to the AWS server!")
+            pass
 
-    def sub(self):
-        print("Subscribing to topic command...")
-        self.connection.subscribe(topic = "command", QoS = 1, callback = self.sub_callback)
-        print("Subscribed to topic command")
+        myMQTTClient.disconnect()
 
-    def sub_callback(self, client, userdata, message):
-        payload = json.loads(message.payload.decode().replace("'", '"'))
+    print("Exitting...")
 
-        if payload["id"] != self.id:
-            return
+    return
 
-        command = payload["command"]
-        print(command)
 
-        if command == "AUTO_LEVEL_ON":
-            self.auto_level = True
-        elif command == "AUTO_LEVEL_OFF":
-            self.auto_level = False
-        elif command == "LEVEL":
-            level.level()
