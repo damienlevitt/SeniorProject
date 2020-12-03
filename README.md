@@ -1,8 +1,8 @@
 # SeniorProject
-##Self Leveling IOT Device
+## Self Leveling IOT Device
 This repo includes the drivers for the linear actuators, and the accelerometer, and a main program that receives commands from aws and sends the level status.
 
-##Software Setup
+## Software Setup
 * Install the following libraries on the Raspberry Pi
     * adafruit_adxl34x
     * gpioZero
